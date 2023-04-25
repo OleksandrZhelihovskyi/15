@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        div{
+            width:50px;
+            height:50px;
+            border: 2px solid rgb(78, 78, 78);
+            position:absolute;
+            background-color:rgb(124, 124, 124);
+            color:aqua;
+            user-select:none;
+        }
+        body{
+            background-color:rgb(61, 61, 61);
+        }
+    </style>
+</head>
+<body onmousemove="MoveDiv()" >
+    <script>
+        let array = new Array();
+        let old = [];
+        old.length = 15;
+        let flag = true;
+        let activeBlock = null;
+        let cX, cY;
+        let marker = 0;
+        for (let i = 0; i < 4; i++)
+            array[i] = new Array();
+        for (let i = 0; i < 4; i++)
+            for (let j = 0; j < 4; j++) {
+                flag = true;
+                while (flag && marker<15) {
+                    let res = Math.round(Math.random() * 15);
+                    for (let g = 0; g <= marker; g++)
+                        if (res == old[g])
+                            flag = false;
+                    if (flag && res != 0) {
+                        console.log(res);
+                        array[i][j] = res;
+                        old[marker] = res;
+                        marker++;
+                        flag = false;
+                        
+                    } else flag = true;
+                }               
+            }
+              
+        console.log(array);
+        console.log(old);
+        function createArray() {
+            for (let i = 0; i < 4; i++)
+                for (let j = 0; j < 4; j++) {
+                    if (i * j != 9) {
+                        let elem = document.createElement("div");
+                        elem.style.top = 200+j * 50 + 5*j + 'px';
+                        elem.innerHTML = array[i][j];
+                        elem.style.left = 500 + i * 50 + 5 * i + 'px';
+                        elem.id = array[i][j];
+                        
+                        elem.onmousedown  = () =>   {
+                           // if (!activeBlock) {
+                                activeBlock = elem;
+
+                                cX = event.offsetX;
+                                cY = event.offsetY;
+                          //  }
+                        }
+                        elem.onmouseup =  () =>{
+                            if (activeBlock) 
+                            activeBlock = null;
+                        }
+                        elem.onmouseout = () => {
+                            activeBlock = null;
+                        }
+                       
+                        document.body.appendChild(elem);
+                    }
+            }
+        }
+        
+        function MoveDiv() {
+            if (activeBlock) {
+                if ((parseInt(activeBlock.style.left.slice(0, 3)) + 5) > (event.clientX) && (parseInt(activeBlock.style.left.slice(0, 3)) > 500) && CheckSide("left") == 1) {
+               
+                    activeBlock.style.left = parseInt(activeBlock.style.left.slice(0, 3)) - 55 + 'px';
+                    activeBlock = null;
+                } else
+                    if ((parseInt(activeBlock.style.left.slice(0, 3)) + 45) < (event.clientX) && (parseInt(activeBlock.style.left.slice(0, 3)) < 665) && CheckSide("right") == 1) {
+                   
+                    activeBlock.style.left = parseInt(activeBlock.style.left.slice(0, 3)) + 55 + 'px';
+                    activeBlock = null;
+                }
+                if ((parseInt(activeBlock.style.top.slice(0, 3)) + 5) > (event.clientY) && (parseInt(activeBlock.style.top.slice(0, 3)) > 200) && CheckSide("up") == 1) {
+                    activeBlock.style.top = parseInt(activeBlock.style.top.slice(0, 3)) - 55 + 'px';
+                    activeBlock = null;
+                } else
+                    if ((parseInt(activeBlock.style.top.slice(0, 3)) + 45) < (event.clientY) && (parseInt(activeBlock.style.top.slice(0, 3)) < 365) && CheckSide("down") == 1) {
+
+                    activeBlock.style.top = parseInt(activeBlock.style.top.slice(0, 3)) + 55 + 'px';
+                    activeBlock = null;
+                }
+            }
+                
+        }
+        function Left() {
+            activeBlock = null;
+        }
+        function CheckSide(side) {
+            let divs = document.getElementsByTagName('div');
+            switch (side) {
+                case "left": 
+                    for (let i = 0; i < divs.length; i++) {
+                        if (parseInt(divs[i].style.left.slice(0, 3)) + 55 == parseInt(activeBlock.style.left.slice(0, 3))
+                            && parseInt(divs[i].style.top.slice(0, 3)) == parseInt(activeBlock.style.top.slice(0, 3))) {
+                            console.log('aa');
+                            return 0;
+                        }
+                    }
+                    break;
+                case "right":
+                    for (let i = 0; i < divs.length; i++) {
+                        if (parseInt(divs[i].style.left.slice(0, 3)) - 55 == parseInt(activeBlock.style.left.slice(0, 3))
+                            && parseInt(divs[i].style.top.slice(0, 3)) == parseInt(activeBlock.style.top.slice(0, 3)))
+                            return 0;
+                    }
+                    break;
+                case "up":
+                    for (let i = 0; i < divs.length; i++) {
+                        if (parseInt(divs[i].style.top.slice(0, 3)) + 55 == parseInt(activeBlock.style.top.slice(0, 3))
+                            && parseInt(divs[i].style.left.slice(0, 3)) == parseInt(activeBlock.style.left.slice(0, 3)))
+                            return 0;
+                    }
+                    break;
+                case "down":
+                    for (let i = 0; i < divs.length; i++) {
+                        if (parseInt(divs[i].style.top.slice(0, 3)) - 55 == parseInt(activeBlock.style.top.slice(0, 3))
+                            && parseInt(divs[i].style.left.slice(0, 3)) == parseInt(activeBlock.style.left.slice(0, 3)))
+                            return 0;
+                    }
+                    break;
+            }
+            divs = null;
+            return 1;
+        }
+        createArray();
+    </script>
+</body>
+</html>
